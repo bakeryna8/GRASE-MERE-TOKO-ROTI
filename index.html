@@ -1,0 +1,108 @@
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';  // <- pastikan ini ada
+import App from './App';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Toko Roti Manis</title>
+  <style>
+    :root{--primary:#c25b12;--bg:#fff7ef}
+    body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg)}
+    header{background:var(--primary);color:#fff;padding:16px;text-align:center}
+    nav a{color:#fff;margin:0 10px;text-decoration:none;font-weight:bold}
+    .hero{padding:50px 20px;text-align:center}
+    .products{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;padding:20px}
+    .card{background:#fff;border-radius:14px;padding:15px;box-shadow:0 6px 15px rgba(0,0,0,.1)}
+    .card img{width:100%;border-radius:12px}
+    button{background:var(--primary);color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer}
+    footer{background:#333;color:#fff;text-align:center;padding:14px}
+    #cart{position:fixed;right:20px;bottom:20px;background:#fff;border-radius:14px;padding:15px;box-shadow:0 6px 15px rgba(0,0,0,.2);width:260px}
+    #admin{background:#fff;padding:20px;margin:20px;border-radius:14px}
+    input{padding:6px;margin:4px 0;width:100%}
+  </style>
+</head>
+<body>
+<header>
+  <h1>Toko Roti Manis</h1>
+  <nav>
+    <a href="#home">Home</a>
+    <a href="#produk">Produk</a>
+    <a href="#admin">Admin</a>
+  </nav>
+</header>
+
+<section class="hero" id="home">
+  <h2>Roti Fresh Setiap Hari 🍞</h2>
+  <p>Order mudah & cepat via WhatsApp</p>
+</section>
+
+<section id="produk">
+  <h2 style="text-align:center">Produk Kami</h2>
+  <div class="products" id="productList"></div>
+</section>
+
+<div id="cart">
+  <h3>Keranjang</h3>
+  <ul id="cartItems"></ul>
+  <b id="total"></b><br><br>
+  <button onclick="checkout()">Order via WhatsApp</button>
+</div>
+
+<section id="admin">
+  <h2>Admin Panel</h2>
+  <input id="pName" placeholder="Nama Roti" />
+  <input id="pPrice" placeholder="Harga" type="number" />
+  <input id="pImg" placeholder="Link Foto Roti" />
+  <button onclick="addProduct()">Tambah Produk</button>
+</section>
+
+<footer>
+  <p>© 2025 Toko Roti Manis</p>
+</footer>
+
+<script>
+let products = JSON.parse(localStorage.getItem('products')) || [
+  {name:'Roti Coklat',price:5000,img:'https://images.unsplash.com/photo-1608198093002-ad4e005484ec'},
+  {name:'Roti Keju',price:6000,img:'https://images.unsplash.com/photo-1541592106381-b31e9677c0e5'}
+];
+let cart=[];
+
+function renderProducts(){
+  const list=document.getElementById('productList');list.innerHTML='';
+  products.forEach((p,i)=>{
+    list.innerHTML+=`<div class='card'>
+      <img src='${p.img}'>
+      <h3>${p.name}</h3>
+      <p>Rp${p.price}</p>
+      <button onclick='addCart(${i})'>Tambah</button>
+    </div>`;
+  });
+}
+function addCart(i){cart.push(products[i]);renderCart();}
+function renderCart(){
+  let ul=document.getElementById('cartItems');ul.innerHTML='';let t=0;
+  cart.forEach(c=>{ul.innerHTML+=`<li>${c.name} - Rp${c.price}</li>`;t+=c.price});
+  document.getElementById('total').innerText='Total: Rp'+t;
+}
+function checkout(){
+  let msg='Order Roti:%0A';cart.forEach(c=>msg+=`- ${c.name} Rp${c.price}%0A`);
+  window.open('https://wa.me/6281234567890?text='+msg);
+}
+function addProduct(){
+  products.push({name:pName.value,price:+pPrice.value,img:pImg.value});
+  localStorage.setItem('products',JSON.stringify(products));renderProducts();
+}
+renderProducts();
+</script>
+</body>
+</html>
